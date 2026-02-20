@@ -1,0 +1,111 @@
+#include<stdio.h>
+//difficulty:***
+//
+
+typedef unsigned char *byte_pointer;
+void show_byte(byte_pointer a, size_t len) {
+        for(size_t i=len;i>0;i--)
+                printf(" %.2x", a[i-1]);
+        printf("\n");
+}
+
+void show_bits(byte_pointer a, size_t len) {
+        unsigned char tmp;
+        for(size_t i=len;i>0;i--)
+        {
+                printf(" ");
+                for(int j=7;j>=0;j--)
+                        printf("%d", (a[i-1]>>j) & 1);
+        }
+        printf("\n");
+}
+/*
+ * Suppose we want to compute the complete 2w-bit representation of x*y,
+ * where both x and y are unsigned, on a machine for which data type unsigned is w bits.
+ * The low-order w bits of the product can be computed with the expression x*y, so we only require a procedure with prototype:*/
+
+unsigned int unsigned_high_prod(unsigned x, unsigned y);
+/*
+ * that computes the high-order w bits of x * y for unsigned variables.
+ * We have access to a library function with prototype*/
+int signed_high_prod(int x, int y);
+//by the way, this function can be hand written.
+/*
+ * that computes the high-order w bits of x*y for the case where x and y are in two's-complement form.
+ * Write code calling this procedure to implement the function for unsigned arguments.
+ * Justify the correctness of your solution.*/
+unsigned int get_sgn(unsigned a, unsigned b) {
+	return a+b < a;
+}
+unsigned int unsigned_high_prod(unsigned x, unsigned y) {
+	unsigned i, w=sizeof(unsigned)<<3;
+	unsigned tmp=0, sgn=0, ans=0;
+	unsigned mask=0, slice;
+	for(i=w; i>0; i--)
+	{
+		//mask = (~0) - (1<<(i-1)) + 1;
+		//show_bits((byte_pointer)&mask, sizeof(unsigned));
+		slice = (~0) - (1<<(w-i));//a mask that filter other bits
+		tmp = ~slice & y;
+		tmp = (!!tmp) * x;//get the particular product
+		sgn = get_sgn(ans, tmp);//get the overflow bit
+		
+		printf("now program is calculating:\n");
+		printf(" !%d\t\t\t\t   !%d\n", 32-i+31, 32-i);
+		show_bits((byte_pointer)&tmp, sizeof(unsigned));
+		show_bits((byte_pointer)&ans, sizeof(unsigned));
+		ans += tmp;//add the previous result and the product
+		printf("the sgn bit is: %d\n", sgn);
+		ans = (ans>>1) + (sgn<<w-1);//
+	}
+	printf("finally:\n");
+	printf(" !%d\t\t\t\t   !%d\n", w+w-1, w);
+	show_bits((byte_pointer)&ans, sizeof(unsigned));
+	
+}//this is a pure simulation of multiplication, which is not very efficient.
+unsigned int unsigned_high_prod_optimized(unsigned x, unsigned y) {
+	unsigned half_w = sizeof(unsigned)<<2;//get the half length of the word size
+	unsigned mask = (1u<<half_w) - 1;
+	unsigned x_high = x>>half_w, x_low = x & mask;
+	unsigned y_high = y>>half_w, y_low = y & mask;
+	unsigned hh = x_high * y_high;//here won't cause overflow since the operators' length is half of w.
+	unsigned xy = x_high * y_low;
+	unsigned yx = y_high * x_low;
+	unsigned ll = x_low * y_low;
+	ll >>= half_w;//the lowest half_w bits has no contribute to the highest bits, so we can directly erase them.
+	unsigned mid = ll + (xy&mask) + (yx&mask);//it's easy to prove that the addition of three numbers will not cause overflow.
+	unsigned ans = hh + (xy>>half_w) + (yx>>half_w) + (mid>>half_w);
+	show_bits((byte_pointer)&ans, sizeof(unsigned));
+}
+int signed_high_prod_optimized(int x, int y) {
+	int half_w = sizeof(int)<<2;//get the half length of the word size
+	int mask = (1u<<half_w) - 1;
+	int x_high = x>>half_w, x_low = x & mask;
+	int y_high = y>>half_w, y_low = y & mask;
+	int hh = x_high * y_high;//here won't cause overflow since the operators' length is half of w.
+	int xy = x_high * y_low;
+	int yx = y_high * x_low;
+	int ll = x_low * y_low;
+	//ll >>= half_w;//the lowest half_w bits has no contribute to the highest bits, so we can directly erase them.
+	//note that in two's complement form, every bit except the most significant one has a positive weight, so the x_low and y_low is actually positive numbers.
+	//in that case, the product ll is defintely a positive number, however its sign bit might be 1, accidentally showing that it's a negative number.
+	//so here needs a little change, by setting the ll to unsigned type to make sure the right shift always restore 0 instead of 1 at the left.
+	ll = (int)((unsigned)ll >> half_w);
+	int mid = ll + (xy&mask) + (yx&mask);//it's easy to prove that the addition of three numbers with the length of half_w will not cause overflow.
+	int ans = hh + (xy>>half_w) + (yx>>half_w) + (int)(((unsigned)mid)>>half_w);
+	show_bits((byte_pointer)&ans, sizeof(int));
+	return ans;
+}
+int main()
+{
+        unsigned x=3000000000;
+        show_byte((byte_pointer)&x, sizeof(int));
+        show_bits((byte_pointer)&x, sizeof(int));
+	printf("\n");
+	unsigned_high_prod_optimized(x, x);
+	int a, b;
+	printf("please enter two numbers. the program will return the highest w bits of the product.\n");
+	scanf("%d%d", &a, &b);
+        signed_high_prod_optimized(a, b);
+	return 0;
+}
