@@ -35,12 +35,22 @@ int bias(int x, int k) {
 int mul3div4(int x) {
         int x_4 = x + bias(x, 2)>>2;
         //return x_4 + (x_4<<1);writing like this is not perfect.
-	//because the rounding process is happend when doing division, not after whole calculation.
+	//because the rounding process is happend when doing division, not after whole calculation. the remainder (or modulus) hasn't been take to account.
+	int remainder = x - (x_4<<2);//calculate remainder
+				     //another writing is x & 0x3.
+	x_4 += (x_4<<1);
+	//show_bits((byte_pointer)&remainder, sizeof(int));
+	remainder = remainder + (remainder<<1);
+	//for the remainder, the calculation can be reversed:
+	//we can first calculate remainder * 3
+	remainder = (remainder + bias(remainder, 2))>>2;//and then calculate it divided by 4.
+	//printf("%d\n%d\n", remainder, remainder + x_4);
+	return remainder + x_4; 
 }
 int main()
 {
         int x, y;
-        printf("Please enter a number x. the program will return x times 3 then divided by 4.\nInstead of the program 2_78, this program won't cause overflow.");
+        printf("Please enter a number x. the program will return x times 3 then divided by 4.\nInstead of the program 2_78, this program won't cause overflow.\n");
         scanf("%d", &x);
         show_byte((byte_pointer)&x, sizeof(int));
         show_bits((byte_pointer)&x, sizeof(int));

@@ -5,7 +5,29 @@ this file is a catalog for the following programs.
 2_58: determine the endianness. return 1 when compiled and run on a little-endian machine, and return 0 otherwise.
 2_59: yield a word consisting of the least significant byte of x, and the remaining bytes of y.
 2_60: return an unsigned value in which byte i of argument x has been replaced by byte b.
-2_61: 
+2_61: give out 1 when any bit of x equals 1 or 0, or any bit in the least significant byte of x equals 1 or 0. 0 otherwise.
+2_62: yeild 1 when run on a machine that uses arithmetic right shifts for int's, and 0 otherwise.
+2_63: transform an arithmetic right shift to logical right shift, and transform the logical right shift into arithmetic one.
+2_64: return 1 when any odd bit of x equals 1; 0 otherwise.(assume w = 32).
+2_65: return 1 when x contains an odd number of 1s; 0 otherwise.(assume w = 32).
+2_66: generate mask indicating leftmost 1 in x.(assume w = 32).
+2_67: yields 1 when run on a machine for which an int is 32 bits; 0 otherwise.
+2_68: mask with least significant n bits set to 1.
+2_69: do rotating left shift.(assume 0 <= n < w).
+2_70: return 1 when x can be represented as an n-bit, 2's complement number; 0 otherwise.
+2_71: extract a number with the length of a byte from an unsigned type.
+2_72: copy an integer "val" into a buffer "buff", but it should do so only if enought space is avaliable in the buffer.
+2_73: addittion that saturates to TMin or TMax.
+2_74: return 1 if the computation x-y does not overflow. 0 otherwise.
+2_75: compute the high-order w bits of x*y for unsigned and signed variables.
+2_76: none(hand writing homework about calculating multiplications). HOWEVER, IN CHINESE VERSION, THIS PROGRAM IS TO REALIZE FUNCTION calloc.
+2_77: divide x by power of two.(assume 0 <= k < w-1).
+2_78: computes 3*x/4 for integer argument x, and replicate the fact that the computation 3*x may cause overflow.
+2_79: computes 3*x/4 for integer argument x, which should not overflow and rounds toward zero.
+2_80: generate the bit patterens that follow: 1...10...0(least k-th significant bits is 0) or 0...01...10...0(least j-th significant bits is 0, and then k length of 1s, and then turn to 0).
+2_81: none(hand writing homework about bitwise calculation).
+2_82: nont(hand writing homework about infinite expression of float numbers).
+2_83: realise less than or equal function for two float type numbers.
 
 Bit-level integer coding rules
 In several of the following problems, we will artificially restrict what programming constructs you can use to help you gain a better understanding of the bit-level, logic, and arithmetic operations of C. In answering these problems, your code must follow these rules:
