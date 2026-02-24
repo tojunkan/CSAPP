@@ -139,6 +139,116 @@ void test_binary(const char* func_name, double (*func)(double, double)) {
 	}
 }
 
+void test_conversion() {
+	printf("============test: Type Conversions ============\n");
+	
+	//test cases for type conversion
+	double double_values[] = {3.14, -3.14, 2.718, -2.718, 0.0, -0.0, 
+				 INFINITY, -INFINITY, NAN, 1.5, -1.5, 2.5, -2.5};
+	const char* double_names[] = {"3.14", "-3.14", "2.718", "-2.718", "0.0", "-0.0",
+				      "inf", "-inf", "NaN", "1.5", "-1.5", "2.5", "-2.5"};
+	
+	printf("\n1. double to int (implicit and explicit):\n");
+	for(int i=0; i<sizeof(double_values)/sizeof(double); i++) {
+		double d = double_values[i];
+		int i_implicit = d; //implicit conversion
+		int i_explicit = (int)d; //explicit conversion
+		printf("%s -> implicit int: %d, explicit (int): %d\n", 
+		       double_names[i], i_implicit, i_explicit);
+	}
+	
+	printf("\n2. double to float (implicit and explicit):\n");
+	for(int i=0; i<sizeof(double_values)/sizeof(double); i++) {
+		double d = double_values[i];
+		float f_implicit = d; //implicit conversion
+		float f_explicit = (float)d; //explicit conversion
+		printf("%s -> implicit float: %.6g, explicit (float): %.6g\n",
+		       double_names[i], f_implicit, f_explicit);
+	}
+	
+	printf("\n3. int to double/float (implicit):\n");
+	int int_values[] = {0, 1, -1, 123456, -123456, 2147483647, -2147483648};
+	const char* int_names[] = {"0", "1", "-1", "123456", "-123456", "INT_MAX", "INT_MIN"};
+	
+	for(int i=0; i<sizeof(int_values)/sizeof(int); i++) {
+		int n = int_values[i];
+		double d = n; //implicit int to double
+		float f = n;  //implicit int to float
+		printf("%s -> double: %.6g, float: %.6g\n", int_names[i], d, f);
+	}
+	
+	printf("\n4. mixed-type operations (int + double):\n");
+	for(int i=0; i<5; i++) {
+		int n = int_values[i];
+		double d = double_values[i];
+		double result = n + d; //int promoted to double
+		printf("%s + %s = %.6g (int promoted to double)\n", 
+		       int_names[i], double_names[i], result);
+	}
+}
+
+//new function: test extended rounding functions
+void test_rounding_extended() {
+	printf("============test: Extended Rounding Functions ============\n");
+	
+	double test_cases[] = {3.14, -3.14, 2.5, -2.5, 1.5, -1.5, 3.7, -3.7,
+			       0.0, -0.0, INFINITY, -INFINITY, NAN,
+			       2.718, -2.718, 100.3, -100.3};
+	const char* case_names[] = {"3.14", "-3.14", "2.5", "-2.5", "1.5", "-1.5", 
+				    "3.7", "-3.7", "0.0", "-0.0", "inf", "-inf", "NaN",
+				    "2.718", "-2.718", "100.3", "-100.3"};
+	
+	printf("\n1. round() - round to nearest integer, halfway cases away from zero:\n");
+	for(int i=0; i<sizeof(test_cases)/sizeof(double); i++) {
+		double result = round(test_cases[i]);
+		printf("round(%s) = ", case_names[i]);
+		if(isnan(result)) printf("NaN\n");
+		else if(isinf(result)) printf("%s\n", result>0?"+inf":"-inf");
+		else printf("%.6g\n", result);
+	}
+	
+	printf("\n2. trunc() - truncate toward zero (remove fractional part):\n");
+	for(int i=0; i<sizeof(test_cases)/sizeof(double); i++) {
+		double result = trunc(test_cases[i]);
+		printf("trunc(%s) = ", case_names[i]);
+		if(isnan(result)) printf("NaN\n");
+		else if(isinf(result)) printf("%s\n", result>0?"+inf":"-inf");
+		else printf("%.6g\n", result);
+	}
+	
+	printf("\n3. nearbyint() - round to nearest integer using current rounding mode:\n");
+	for(int i=0; i<sizeof(test_cases)/sizeof(double); i++) {
+		double result = nearbyint(test_cases[i]);
+		printf("nearbyint(%s) = ", case_names[i]);
+		if(isnan(result)) printf("NaN\n");
+		else if(isinf(result)) printf("%s\n", result>0?"+inf":"-inf");
+		else printf("%.6g\n", result);
+	}
+	
+	printf("\n4. rint() - round to nearest integer, may raise inexact exception:\n");
+	for(int i=0; i<sizeof(test_cases)/sizeof(double); i++) {
+		double result = rint(test_cases[i]);
+		printf("rint(%s) = ", case_names[i]);
+		if(isnan(result)) printf("NaN\n");
+		else if(isinf(result)) printf("%s\n", result>0?"+inf":"-inf");
+		else printf("%.6g\n", result);
+	}
+	
+	printf("\n5. Comparison of different rounding methods for key values:\n");
+	double special_cases[] = {2.5, -2.5, 1.5, -1.5, 3.5, -3.5};
+	const char* special_names[] = {"2.5", "-2.5", "1.5", "-1.5", "3.5", "-3.5"};
+	
+	for(int i=0; i<sizeof(special_cases)/sizeof(double); i++) {
+		double x = special_cases[i];
+		printf("\n%s:\n", special_names[i]);
+		printf("  round()  = %.0f\n", round(x));
+		printf("  trunc()  = %.0f\n", trunc(x));
+		printf("  ceil()   = %.0f\n", ceil(x));
+		printf("  floor()  = %.0f\n", floor(x));
+		printf("  nearbyint() = %.0f\n", nearbyint(x));
+	}
+}
+
 double emptyfunc(double x){return x;}
 int main()
 {
@@ -187,5 +297,8 @@ int main()
 		case 5:test_binary("copysign", copysign);break;
 		default:printf("not supported yet.\n");
 	}
+
+	test_conversion();
+	test_rounding_extended();
 	return 0;
 }
