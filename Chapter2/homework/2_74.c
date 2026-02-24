@@ -1,4 +1,5 @@
 #include <stdio.h>
+//difficulty: **
 
 int add_ok(int a, int b) {
 	if(a > 0 && b > 0 && a+b < 0)return 0;
@@ -6,6 +7,7 @@ int add_ok(int a, int b) {
 	return 1;
 }
 
+/* Determine whether arguments can be sbtracted without overflow.*/
 int sub_ok(int a, int b) {
 	if(b == 0x80000000) return a>-1 ? 0 : 1;
 	else return add_ok(a, -b);
