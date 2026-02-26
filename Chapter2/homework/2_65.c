@@ -1,6 +1,6 @@
 #include <stdio.h>
 //difficulty:****
-//this program returns 1 when x contains an odd nonber os 1s; 0 otherwise.
+//this program returns 1 when x contains an odd number os 1s; 0 otherwise.
 //assume w=32.
 //
 //the function should follow the rule of:
@@ -51,20 +51,31 @@ int odd_ones(unsigned x) {
 		show_bits((byte_pointer)&shiftx, sizeof(unsigned));
 		x = (x ^ x>>i);
 		x = x & (1<<i)-1;
+		//the basic idea of this program is to squash the word length x, and keep the same parity.
+		//the key point is that, if a has odd numbers of 1, lets say 10110011,
+		//			while b has even numbers of 1, lets say 10010011
+		//then the a---b(which is 1011001110010011) should have odd numbers of 1.
+		//lets try a ^ b:
+		//10110011
+		//10010011
+		//00100000
+		//we can find that the result has odd numbers of 1, just like the original.
+		//so the whole algorithm is structed base on the fact that 
+		//odd numbers are always added up by an even number and another odd number.
 		show_bits((byte_pointer)&x, sizeof(unsigned));
 		printf("\n");
 	}
 	//for convinence, I used loop, but actually not necessary for given wordsize.
 	//the code above can be written to:
-	//x ^= 16;
+	//x ^= (x ^ x>>16);
 	//x &= (1<<16)-1;
-	//x ^= 8;
+	//x ^= (x ^ x>>8);
 	//x &= (1<<8)-1;
-	//x ^= 4;
+	//x ^= (x ^ x>>4);
 	//x &= (1<<4)-1;
-	//x ^= 2;
+	//x ^= (x ^ x>>2);
 	//x &= (1<<2)-1;
-	//x ^= 1;
+	//x ^= (x ^ x>>1);
 	//x &= (1<<1)-1;
 	return x & 1;
 }
@@ -78,4 +89,3 @@ int main()
 	else printf("x contains an even number of 1s.\n");
 	return 0;
 }
-

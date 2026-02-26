@@ -25,8 +25,7 @@ void show_bits(byte_pointer a, size_t len) {
  * the function should follow the bit-level integer coding rules.*/
 int bias(int x, int k) {
         //the key is to get the correct biased value for negatives.
-        int mask = (x&0x80000000);
-        mask -= !!mask;//since the largest value of k is up to 31, we can left the most significant bit to 0.
+        int mask = (x>>31);//use the feature of arithmetic right shift. to generate a mask that yeilds 0xFFFFFFFF if x is negative, otherwise yeilds 0.
         int biasing = (1<<k)-1;//the operator "-" is prior to operator "<<"
         biasing &= mask;
         return biasing;
