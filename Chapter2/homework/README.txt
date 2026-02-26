@@ -28,6 +28,14 @@ this file is a catalog for the following programs.
 2_81: none(hand writing homework about bitwise calculation).
 2_82: nont(hand writing homework about infinite expression of float numbers).
 2_83: realise less than or equal function for two float type numbers.
+2_84: none(hand writing homework about floating point format)
+2_85: none(hand writing homework about special float values)
+2_86: none(hand writing homework about float representation tests)
+2_87: none(hand writing homework about rounding)
+2_88: none(hand writing homework about casting between int, float and double)
+2_89: compute a floating-point representation of 2^x.
+2_90: none(hand writing homework about approximating pi value)
+
 
 Bit-level integer coding rules
 In several of the following problems, we will artificially restrict what programming constructs you can use to help you gain a better understanding of the bit-level, logic, and arithmetic operations of C. In answering these problems, your code must follow these rules:
@@ -47,3 +55,13 @@ Allowed operations
 	Equality(==) and inequality(!=) tests.(Some of the problems do not allow these.)
 	Integer constants INT_MIN and INT_MAX.
 Even with these rules, you should try to make your code readable by choosing descriptive variable names and using comments to describe the logic behind your solutions.
+
+Bit-level floating-point coding rules
+In the following problems, you will write code to implement floating-point functions, operating directly on bit-level representations of floating-point numbers. Your code should exactly replicate the conventions for IEEE floating-point operations, including using round-to-even mode when rounding is required.
+Toward this end, we define data type float_bits to be equivalent to un
+signed:
+/* Access bit-level representation floating-point number */
+typedef unsigned float_bits;
+Rather than using data type float in your code, you will use float_bits.
+You may use both int and unsigned data types, including unsigned and integer constants and operations. You may not use any unions, structs, or arrays. Most significantly, you may not use any floating-point data types, operations, or constants. Instead, your code should perform the bit manipulations that implement the specified floating-point operations.
+The following function illustrates the use of these coding rules. For argument f, it returns ±0iff is denormalized (preserving the sign of f) and returns f otherwise.
