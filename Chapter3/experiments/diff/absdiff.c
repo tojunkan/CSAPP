@@ -55,9 +55,9 @@ x_ge_y:
 				|
 				the source code is ++(increament), but we can see that GCC assembled it to
 				the instruction "addq". that's because instruction "inc" does not update 
-				some of thosecondition flags such as OF, ZF, but will not update the remain.
+				some of those condition flags such as OF, ZF, but will not update the remain.
 			        (this is due to some historical issue)	
-				This may cause mismatching of those conditiona flags, so now CPU will take time
+				This may cause mismatching of those conditional flags, so now CPU will take time
 				to deal with it, and the program will turn out to be slower.
    f:   01
   10:   89 f0                   mov    %esi,%eax
@@ -71,8 +71,8 @@ x_ge_y:
 					    here we can see 0x0(%rip), that's because we defined variables in 
 					    the global field. These variables will have a static position and 
 					    will not be free till the program is over.
-					    so, we can use PC-relative way to calculate it's index.
-					    the register %rip always points to the next instructions to be processed.
+					    so, we can use PC-relative way to calculate its index.
+					    the register %rip always points to the NEXT instructions to be processed.
 					    (where r represents it's 64bits, 
 					    and ip is the abbreviation for "instruction pointer")
 					    note that %rip is different from the general registers, that it is
@@ -86,6 +86,8 @@ x_ge_y:
 					    the number 0x0 is the offset from %rip.
 					    here assembler remains the number with 0x0, that's because the object file
 					    is still not linked, so the actual address is still unkown.
+					    it'll get updated as soon as the program is linked, since the addresses of those 
+					    static variables will always remain the same at that time.
   1c:   01
   1d:   89 f8                   mov    %edi,%eax
   1f:   29 f0                   sub    %esi,%eax
