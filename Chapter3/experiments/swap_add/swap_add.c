@@ -23,4 +23,5 @@ long caller() {
 //
 // Second, to protect stack frame from attackers, kernels will allocate another 8 bytes for a value known as "canary". this value is not initiallized, thus remains randomly. when the function is finished, the kernel will check if this value is changed. if so, then that means attack has occured, and program will be killed. So there's another 8 bytes.
 //
-// and you'll find that that two args and canary value are 24 bytes, so we need another 8 bytes to align with 16.
+// and you'll find that that two args and canary value are 24 bytes, so we need another 8 bytes to align with 16. This is an optimizable gcc problem. 
+// also, the code wrote on CSAPP is not correct. For detail: https://stackoverflow.com/questions/70953275/why-does-gcc-allocate-more-stack-memory-than-needed
