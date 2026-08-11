@@ -16,33 +16,39 @@ gets:
 	.cfi_def_cfa_offset 32
 	movq	%rdi, %rbp
 	movq	%rdi, %rbx
+	jmp	.L2
+.L4:
+	movb	%al, (%rbx)
+	leaq	1(%rbx), %rbx
 .L2:
 	movq	stdin(%rip), %rdi
 	call	getc@PLT
-	cmpl	$-1, %eax
-	je	.L8
 	cmpl	$10, %eax
-	je	.L8
-	addq	$1, %rbx
-	movb	%al, -1(%rbx)
-	jmp	.L2
-.L8:
+	je	.L3
 	cmpl	$-1, %eax
-	jne	.L9
-	movl	$0, %eax
+	jne	.L4
+.L3:
+	cmpl	$-1, %eax
+	sete	%dl
 	cmpq	%rbp, %rbx
-	je	.L1
-.L9:
+	sete	%al
+	testb	%al, %dl
+	jne	.L6
 	movb	$0, (%rbx)
 	movq	%rbp, %rax
 .L1:
 	addq	$8, %rsp
+	.cfi_remember_state
 	.cfi_def_cfa_offset 24
 	popq	%rbx
 	.cfi_def_cfa_offset 16
 	popq	%rbp
 	.cfi_def_cfa_offset 8
 	ret
+.L6:
+	.cfi_restore_state
+	movl	$0, %eax
+	jmp	.L1
 	.cfi_endproc
 .LFE23:
 	.size	gets, .-gets
@@ -57,16 +63,29 @@ echo:
 	.cfi_offset 3, -16
 	subq	$16, %rsp
 	.cfi_def_cfa_offset 32
-	leaq	8(%rsp), %rbx
+	movq	%fs:40, %rax
+	movq	%rax, 8(%rsp)
+	xorl	%eax, %eax
+	movq	%rsp, %rbx
 	movq	%rbx, %rdi
 	call	gets
 	movq	%rbx, %rdi
 	call	puts@PLT
+	movq	8(%rsp), %rax
+	subq	%fs:40, %rax
+#	in some gcc version, here will compiled to xorq.
+	jne	.L11
+#	if not matched, then stack state is sure to be corrupted.
 	addq	$16, %rsp
+	.cfi_remember_state
 	.cfi_def_cfa_offset 16
 	popq	%rbx
 	.cfi_def_cfa_offset 8
 	ret
+.L11:
+	.cfi_restore_state
+	call	__stack_chk_fail@PLT
+#	and then program raise error.
 	.cfi_endproc
 .LFE24:
 	.size	echo, .-echo

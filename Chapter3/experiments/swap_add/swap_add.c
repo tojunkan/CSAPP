@@ -19,9 +19,20 @@ long caller() {
 // this is because of two reason.
 // 
 // First, ABI (Application Binary Interface) regulates that:
-// when a call instruction is about to be executed, the register %rsp must be multiple of 16, not just 8. When caller() is called by main(), the next instruction in function main will also be pushed into the stack, which makes the %rsp points to a value that mods 16 is 8. caller also needs to call swap_add(), so the program will get 8 bytes first. 
+// when a call instruction is about to be executed, the register %rsp must be multiple of 16, not just 8.
+//  When caller() is called by main(), the next instruction in function main will also be pushed into the stack, 
+//  which makes the %rsp points to a value that mods 16 is 8. 
+//  caller() also needs to call swap_add(), so the program will get 8 bytes first. 
 //
-// Second, to protect stack frame from attackers, kernels will allocate another 8 bytes for a value known as "canary". this value is not initiallized, thus remains randomly. when the function is finished, the kernel will check if this value is changed. if so, then that means attack has occured, and program will be killed. So there's another 8 bytes.
+// Second, to protect stack frame from attackers, 
+// kernels will allocate another 8 bytes for a value known as "canary".
+// this value is not initiallized, thus remains randomly. 
+// when the function is finished, the kernel will check if this value is changed. 
+// if so, then that means attack has occured, and program will be killed. 
+// So there's another 8 bytes.
+// See also: 3.10.4
 //
-// and you'll find that that two args and canary value are 24 bytes, so we need another 8 bytes to align with 16. This is an optimizable gcc problem. 
-// also, the code wrote on CSAPP is not correct. For detail: https://stackoverflow.com/questions/70953275/why-does-gcc-allocate-more-stack-memory-than-needed
+// and you'll find that that two args and canary value are 24 bytes, so we need another 8 bytes to align with 16. 
+// This is an optimizable gcc problem. 
+// also, the code wrote on CSAPP is not correct. 
+// For detail: https://stackoverflow.com/questions/70953275/why-does-gcc-allocate-more-stack-memory-than-needed
