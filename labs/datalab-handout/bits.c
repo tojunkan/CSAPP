@@ -273,38 +273,34 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-	int mask, mask1, mask2, mask4, mask8, mask16, highbit, ppcnt, ans; 
+	int mask1, mask2, mask4, mask8, mask16, highbit, ppcnt, ans; 
 
-	mask = (x>>31);
-	//if x is signed, then mask will remain 0xffffffff;
-	//else then mask will goto 0x00000000;
-	x = ((~x + 1) & mask) | (x & ~mask);
+	x = x ^ (x>>31);
 	
 	highbit = x | (x>>1);
-	highbit |= (x>> 2);
-	highbit |= (x>> 4);
-	highbit |= (x>> 8);
-	highbit |= (x>>16);
-	highbit >>= 1;
+	highbit |= (highbit>> 2);
+	highbit |= (highbit>> 4);
+	highbit |= (highbit>> 8);
+	highbit |= (highbit>>16);
 	//the number of "1"s in highbit is the floor of log(|x|).
 
 	mask1 = 0x55;
-	mask1 += mask1>>8;
-	mask1 += mask1>>16;
+	mask1 += mask1<<8;
+	mask1 += mask1<<16;
 
 	mask2 = 0x33;
-	mask2 += mask2>>8;
-	mask2 += mask2>>16;
+	mask2 += mask2<<8;
+	mask2 += mask2<<16;
 
 	mask4 = 0x0f;
-	mask4 += mask4>>8;
-	mask4 += mask4>>16;
+	mask4 += mask4<<8;
+	mask4 += mask4<<16;
 
 	mask8 = 0xff;
-	mask8 += mask8>>16;
+	mask8 += mask8<<16;
 	
-	mask16 = mask8;
-	mask16 += mask16>>8;
+	mask16 = 0xff;
+	mask16 += mask16<<8;
 
 	ppcnt = (highbit & mask1 ) + ((highbit>> 1) & mask1 );
 	ppcnt = (ppcnt & mask2 ) + ((ppcnt>> 2) & mask2 );
@@ -313,7 +309,7 @@ int howManyBits(int x) {
 	ppcnt = (ppcnt & mask16) + ((ppcnt>>16) & mask16);
 
 
-	ans = ppcnt + 1 + (mask & 1);
+	ans = ppcnt + 1;
 	return ans;
 }
 //float
@@ -329,7 +325,8 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+	int exp = 0xff << 23;
+	return 2;
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
